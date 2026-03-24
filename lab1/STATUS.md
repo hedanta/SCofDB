@@ -1,0 +1,123 @@
+# Статус лабораторной работы №1
+
+## ✅ Что готово
+
+### Инфраструктура
+- ✅ Docker окружение настроено
+- ✅ Frontend (React) - полностью рабочий
+- ✅ Backend (FastAPI) - запускается
+- ✅ PostgreSQL - подключена
+- ✅ API роуты готовы
+
+### Документация
+- ✅ README.md - полное описание задания
+- ✅ QUICKSTART.md - инструкция по запуску
+- ✅ Тесты подготовлены
+
+## ⚠️ Что нужно реализовать
+
+### 1. Доменный слой (`backend/app/domain/`)
+
+**user.py**
+- [x] Класс User
+- [x] Валидация email
+
+**order.py**
+- [x] Enum OrderStatus
+- [x] Класс OrderItem
+- [x] Класс OrderStatusChange
+- [x] Класс Order с методами
+
+### 2. Репозитории (`backend/app/infrastructure/repositories.py`)
+
+**UserRepository**
+- [x] save()
+- [x] find_by_id()
+- [x] find_by_email()
+- [x] find_all()
+
+**OrderRepository**
+- [x] save()
+- [x] find_by_id()
+- [x] find_by_user()
+- [x] find_all()
+
+### 3. Сервисы (`backend/app/application/`)
+
+**UserService**
+- [x] register()
+- [x] get_by_id()
+- [x] get_by_email()
+- [x] list_users()
+
+**OrderService**
+- [x] create_order()
+- [x] get_order()
+- [x] add_item()
+- [x] pay_order() ⚠️ КРИТИЧНО!
+- [x] cancel_order()
+- [x] ship_order()
+- [x] complete_order()
+- [x] list_orders()
+- [x] get_order_history()
+
+### 4. SQL Миграция (`backend/migrations/001_init.sql`)
+
+- [x] Таблица order_statuses
+- [x] Таблица users (с ограничениями)
+- [x] Таблица orders (с ограничениями)
+- [x] Таблица order_items (с ограничениями)
+- [x] Таблица order_status_history
+- [x] **Триггер против двойной оплаты** ⚠️ КРИТИЧНО!
+- [x] Бонусные триггеры (опционально)
+
+## 🎯 Главное требование
+
+**Заказ нельзя оплатить дважды!**
+
+Это должно быть гарантировано на двух уровнях:
+1. Доменная модель (Python) - Order.pay()
+2. База данных (PostgreSQL) - триггер
+
+## 🚀 Как начать
+
+```bash
+# 1. Запустить проект
+docker-compose up --build
+
+# 2. Открыть frontend
+open http://localhost:5173
+
+# 3. Увидите NotImplementedError - это нормально
+# Ваша задача - реализовать TODO
+```
+
+## 📝 Порядок выполнения
+
+Рекомендуемый порядок:
+
+1. Начните с `domain/user.py` (самое простое)
+2. Затем `domain/order.py`
+3. Реализуйте SQL миграцию `migrations/001_init.sql`
+4. Реализуйте репозитории
+5. Реализуйте сервисы
+6. Запустите тесты
+
+## ✅ Проверка
+
+```bash
+cd backend
+export PYTHONPATH=$(pwd)
+
+# Тесты домена
+pytest app/tests/test_domain.py -v
+
+# Критический тест
+pytest app/tests/test_domain.py::TestCriticalPaymentInvariant -v
+```
+
+## 📚 Документация
+
+- `README.md` - полное описание задания
+- `QUICKSTART.md` - быстрый старт и подсказки
+- Комментарии в коде - TODO с описанием что делать
