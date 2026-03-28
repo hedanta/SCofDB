@@ -136,7 +136,7 @@ class IdempotencyMiddleware(BaseHTTPMiddleware):
                 await session.commit()
 
         except Exception:
-            pass
+            print("Failed to save idempotency data")
 
         return Response(
             content=response_body,

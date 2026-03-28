@@ -17,7 +17,6 @@ from app.application.payment_service import PaymentService
 from app.domain.exceptions import OrderAlreadyPaidError
 
 
-# TODO: Настроить подключение к тестовой БД
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/marketplace"
 
 

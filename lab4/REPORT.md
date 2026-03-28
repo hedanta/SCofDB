@@ -30,10 +30,10 @@ CREATE TABLE idempotency_keys (
     status VARCHAR(32) NOT NULL DEFAULT 'processing',
     status_code INTEGER,
     response_body JSONB,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    expires_at TIMESTAMP NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
-    
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL,
+
     CONSTRAINT idempotency_status_check CHECK (status IN ('processing', 'completed', 'failed')),
     CONSTRAINT idempotency_unique_key UNIQUE (idempotency_key, request_method, request_path)
 );
@@ -47,7 +47,7 @@ CREATE TABLE idempotency_keys (
 - `expires_at`: время жизни записи (7 дней) для автоматической очистки.
 
 Ограничения:
-- `uniq_idempotency_key_method_path`: уникальность ключа в рамках endpoint - защита от дубликатов на вставке.
+- `idempotency_unique_key`: уникальность ключа в рамках endpoint - защита от дубликатов на вставке.
 
 Индексы:
 - `idx_idempotency_keys_expires_at` - индекс для эффективной очистки просроченных записей
@@ -138,7 +138,6 @@ Order 88512709-9a67-4b27-9ac0-07d1d144fe21 was paid 2 times, num attempts: 2:
 ```
 
 ## 7. Сравнение с решением из ЛР2 (FOR UPDATE)
-_TODO: Сравните подходы по сути и по UX._
 
 `FOR UPDATE`:
 - Цель: обеспечить корректную последовательную работу с данными при конкурентном запросе
@@ -152,8 +151,7 @@ _TODO: Сравните подходы по сути и по UX._
 - Гарантия на уровне API и отдельной таблицы идемпотентности
 - UX: пользователь сразу получает сохранённый результат без повторного выполнения логики
 
-Нужно ли использовать оба механизма вместе:
-Да. Эти подходы решают разные задачи и дополняют друг друга:
+Эти подходы решают разные задачи и дополняют друг друга:
 - `FOR UPDATE` защищает от ситуации, когда два запроса (возможно, с разными ключами идемпотентности) пытаются одновременно оплатить один заказ.
 - `Idempotency-Key` защищает от повторных отправок одного и того же запроса одним клиентом.
 
